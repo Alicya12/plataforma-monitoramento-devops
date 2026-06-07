@@ -32,12 +32,12 @@ A aplicação foi projetada para capturar, persistir e alertar sobre o estado de
 ```text
 ├── backend/
 │   ├── app.py              # API de Ingestão de Métricas (FastAPI)
-│   ├── simulator.py        # Motor de simulação de telemetria de rede
-│   └── requirements.txt    # Dependências do servidor Python
+│   └── simulator.py        # Motor de simulação de telemetria de rede
 ├── frontend/
 │   ├── index.html          # Dashboard e Interface do Usuário
 │   ├── script.js           # Lógica de consumo da API e renderização de gráficos
 │   └── style.css           # Arquivo de estilos (otimizado via Tailwind CDN)
+├── DOCUMENTACAO.md         # Relatório Técnico Completo (Arquitetura, Runbooks e Playbooks)
 ├── metrics.db              # Banco de dados SQLite persistido (Auto-generated)
 ├── README.md               # Apresentação do projeto (Este arquivo)
-└── DOCUMENTACAO.md         # Relatório Técnico Completo (Arquitetura, Runbooks e Playbooks)
+└── requirements.txt        # Dependências de pacotes do ecossistema Python
