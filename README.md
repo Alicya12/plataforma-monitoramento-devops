@@ -29,9 +29,12 @@ A aplicação foi projetada para capturar, persistir e alertar sobre o estado de
 
 ## 📂 Estrutura do Repositório
 
+## 📂 Estrutura do Repositório
+
 ```text
 ├── backend/
 │   ├── app.py              # API de Ingestão de Métricas (FastAPI)
+│   ├── requirements.txt    # Dependências de pacotes do ecossistema Python
 │   └── simulator.py        # Motor de simulação de telemetria de rede
 ├── frontend/
 │   ├── index.html          # Dashboard e Interface do Usuário
@@ -39,5 +42,4 @@ A aplicação foi projetada para capturar, persistir e alertar sobre o estado de
 │   └── style.css           # Arquivo de estilos (otimizado via Tailwind CDN)
 ├── DOCUMENTACAO.md         # Relatório Técnico Completo (Arquitetura, Runbooks e Playbooks)
 ├── metrics.db              # Banco de dados SQLite persistido (Auto-generated)
-├── README.md               # Apresentação do projeto (Este arquivo)
-└── requirements.txt        # Dependências de pacotes do ecossistema Python
+└── README.md               # Apresentação do projeto (Este arquivo)
