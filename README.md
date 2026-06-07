@@ -29,8 +29,6 @@ A aplicação foi projetada para capturar, persistir e alertar sobre o estado de
 
 ## 📂 Estrutura do Repositório
 
-## 📂 Estrutura do Repositório
-
 ```text
 ├── backend/
 │   ├── app.py              # API de Ingestão de Métricas (FastAPI)
