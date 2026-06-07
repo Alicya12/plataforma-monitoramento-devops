@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Monitor - IDP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans min-h-screen">
+
+    <header class="bg-gray-800 border-b border-gray-700 p-4 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-xl font-bold text-white tracking-wide">Plataforma de Monitoramento DevOps</h1>
+                <p class="text-xs text-gray-400">Trabalho Final - Redes de Computadores</p>
+            </div>
+            <div class="w-full sm:w-auto">
+                <input type="text" id="backendUrl" placeholder="Cole a URL externa do backend aqui" 
+                       class="w-full bg-gray-700 text-sm border border-gray-600 rounded px-3 py-1.5 focus:outline-none focus:border-blue-500 text-gray-200">
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 space-y-6">
+
+        <section class="bg-gray-800 rounded-xl p-5 border border-gray-700 shadow-lg">
+            <h2 class="text-lg font-semibold mb-3 text-gray-300">Visão Consolidada do Ecossistema</h2>
+            <div id="globalAlertBanner" class="p-4 rounded-lg bg-gray-700 border border-gray-600 flex flex-col md:flex-row justify-between items-start md:items-center gap-2 transition-all duration-300">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span id="alertBadge" class="px-2.5 py-1 rounded text-xs font-bold uppercase bg-gray-600 text-white">Carregando</span>
+                        <h3 id="alertTitle" class="font-bold text-base md:text-lg">Aguardando conexão com a API...</h3>
+                    </div>
+                    <p id="alertMessage" class="text-sm text-gray-400 mt-1">Insira a URL gerada pelo seu backend para iniciar o monitoramento.</p>
+                </div>
+                <div id="alertAction" class="text-xs font-mono bg-gray-900/50 px-3 py-2 rounded border border-gray-700 max-w-xs">
+                    --
+                </div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <div class="bg-gray-800 rounded-xl p-5 border border-gray-700 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
+                        <h3 class="font-bold text-white text-md">1. Web Server (HTTP/HTTPS)</h3>
+                        <span id="web-status" class="px-2 py-0.5 rounded text-xs font-bold bg-gray-700 text-gray-400">OFFLINE</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mb-4 text-sm">
+                        <div class="bg-gray-750 p-2.5 rounded border border-gray-700/50">
+                            <p class="text-gray-400 text-xs">Latência Check</p>
+                            <p id="web-latency" class="text-lg font-bold text-blue-400">0 ms</p>
+                        </div>
+                        <div class="bg-gray-750 p-2.5 rounded border border-gray-700/50">
+                            <p class="text-gray-400 text-xs">Requisições (RPS)</p>
+                            <p id="web-rps" class="text-lg font-bold text-purple-400">0 req/s</p>
+                        </div>
+                        <div class="bg-gray-750 p-2.5 rounded border border-gray-700/50">
+                            <p class="text-gray-400 text-xs">Erros (4xx / 5xx)</p>
+                            <p id="web-errors" class="text-lg font-bold text-red-400">0 / 0</p>
+                        </div>
+                        <div class="bg-gray-750 p-2.5 rounded border border-gray-700/50">
+                            <p class="text-gray-400 text-xs">Conexões Ativas</p>
+                            <p id="web-connections" class="text-lg font-bold text-green-400">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="h-28 mt-2">
+                    <canvas id="chartWeb"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-xl p-5 border border-gray-700 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
+                        <h3 class="font-bold text-white text-md">2. Banco de Dados (SQL/NoSQL)</h3>
+                        <span id="db-status" class="px-2 py-0.5 rounded text-xs font-bold bg-gray-700 text-gray-400">OFFLINE</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mb-4 text-sm">
+                        <div class="bg-gray-750 p-2.5 rounded border border-gray-700/50">
+                            <p class="text-gray-400 text-xs">Consultas (QPS)</p>
+                            <p id="db-qps" class="text-lg font-bold text-blue-400">0 qps</p>
+                        </div>
+                        <div class="bg-gray-750 p-2.5 rounded border border-gray-700/50">
+                            <p class="text-gray-400 text-xs">Uso de CPU / Memória</p>
+                            <p id="db-resources" class="text-lg font-bold text-orange-400">0% / 0%</p>
+                        </div>
+                        <div class="bg-gray-750 p-2.5 rounded border border-gray-700/50">
+                            <p class="text-gray-400 text-xs">Queries Lentas</p>
+                            <p id="db-slow" class="text-lg font-bold text-red-400">0</p>
+                        </div>
+                        <div class="bg-gray-750 p-2.5 rounded border border-gray-700/50">
+                            <p class="text-gray-400 text-xs">Crescimento Armazenamento</p>
+                            <p id="db-growth" class="text-sm font-bold text-green-400">0 GB</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="h-28 mt-2">
+                    <canvas id="chartDb"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-xl p-5 border border-gray-700 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
+                        <h3 class="font-bold text-white text-md">3. DNS (Resolução de Domínio)</h3>
+                        <span id="dns-status" class="px-2 py-0.5 rounded text-xs font-bold bg-gray-700 text-gray-400">OFFLINE</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div class="bg-gray-750 p-2.5 rounded border border-gray-700/50">
+                            <p class="text-gray-400 text-xs">Tempo de Resposta</p>
+                            <p id="dns-time" class="text-lg font-bold text-teal-400">0 ms</p>
+                        </div>
+                        <div class="bg-gray-750 p-2.5 rounded border border-gray-700/50">
+                            <p class="text-gray-400 text-xs">Resoluções Falhas</p>
+                            <p id="dns-failed" class="text-lg font-bold text-red-400">0</p>
+                        </div>
+                        <div class="bg-gray-750 p-2.5 rounded border border-gray-700/50 col-span-2">
+                            <p class="text-gray-400 text-xs">Consultas Globais por Segundo</p>
+                            <p id="dns-qps" class="text-lg font-bold text-purple-400">0 qps</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-xl p-5 border border-gray-700 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
+                        <h3 class="font-bold text-white text-md">4. Servidor de E-mail (SMTP)</h3>
+                        <span id="smtp-status" class="px-2 py-0.5 rounded text-xs font-bold bg-gray-700 text-gray-400">OFFLINE</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div class="bg-gray-750 p-2.5 rounded border border-gray-700/50">
+                            <p class="text-gray-400 text-xs">Taxa de Entrega / Erros</p>
+                            <p id="smtp-delivery" class="text-lg font-bold text-green-400">0% / 0</p>
+                        </div>
+                        <div class="bg-gray-750 p-2.5 rounded border border-gray-700/50">
+                            <p class="text-gray-400 text-xs">Fila de Saída (Queue Length)</p>
+                            <p id="smtp-queue" class="text-lg font-bold text-amber-400">0</p>
+                        </div>
+                        <div class="bg-gray-750 p-2.5 rounded border border-gray-700/50 col-span-2">
+                            <p class="text-gray-400 text-xs">Volume Transacionado</p>
+                            <p id="smtp-volume" class="text-sm font-bold text-gray-300">0 e-mails/min</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-gray-800 rounded-xl p-5 border border-gray-700 shadow-lg">
+            <h2 class="text-lg font-semibold mb-4 text-red-400">Segurança & Auditoria de Vulnerabilidades</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-gray-900/50 p-4 rounded border border-gray-700">
+                    <span class="text-xs text-gray-400 block mb-1">Detecção de Anomalia DDoS</span>
+                    <span id="sec-ddos" class="px-2 py-0.5 rounded text-xs font-bold bg-green-900 text-green-300">NORMAL</span>
+                </div>
+                <div class="bg-gray-900/50 p-4 rounded border border-gray-700">
+                    <span class="text-xs text-gray-400 block mb-1">Ataques de Força Bruta (Tentativas)</span>
+                    <span id="sec-brute" class="text-sm font-mono font-bold text-gray-300">0 logadas</span>
+                </div>
+                <div class="bg-gray-900/50 p-4 rounded border border-gray-700">
+                    <span class="text-xs text-gray-400 block mb-1">Arquivos de Configuração (.env / conf)</span>
+                    <span id="sec-config" class="px-2 py-0.5 rounded text-xs font-bold bg-green-900 text-green-300">ÍNTEGROS</span>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm border-collapse">
+                    <thead>
+                        <tr class="border-b border-gray-700 text-gray-400 uppercase text-xs">
+                            <th class="py-2 px-3">Serviço</th>
+                            <th class="py-2 px-3">CVE Monitorada</th>
+                            <th class="py-2 px-3">Criticidade</th>
+                            <th class="py-2 px-3">Mitigação Implementada (Playbook)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700/50 text-gray-300">
+                        <tr>
+                            <td class="py-2.5 px-3 font-semibold text-white">Web Server</td>
+                            <td class="py-2.5 px-3 font-mono text-yellow-500 text-xs">CVE-2023-44487</td>
+                            <td class="py-2.5 px-3"><span class="bg-red-900/40 text-red-400 px-2 py-0.5 rounded text-xs font-bold">ALTA</span></td>
+                            <td class="py-2.5 px-3 text-gray-400">Limitação de streams concorrentes via HTTP/2 ativa.</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2.5 px-3 font-semibold text-white">Banco de Dados</td>
+                            <td class="py-2.5 px-3 font-mono text-yellow-500 text-xs">CVE-2024-21096</td>
+                            <td class="py-2.5 px-3"><span class="bg-yellow-900/40 text-yellow-400 px-2 py-0.5 rounded text-xs font-bold">MÉDIA</span></td>
+                            <td class="py-2.5 px-3 text-gray-400">Isolamento e controle de conexões via VPC restrita.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
