@@ -40,6 +40,7 @@ A aplicação foi projetada para capturar, persistir e alertar sobre o estado de
 │   ├── index.html          # Dashboard e Interface do Usuário
 │   ├── script.js           # Lógica de consumo da API e renderização de gráficos
 │   └── style.css           # Arquivo de estilos (otimizado via Tailwind CDN)
+├── .gitignore              # Configuração de arquivos ignorados pelo Git
 ├── DOCUMENTACAO.md         # Relatório Técnico Completo (Arquitetura, Runbooks e Playbooks)
 ├── metrics.db              # Banco de dados SQLite persistido (Auto-generated)
 └── README.md               # Apresentação do projeto (Este arquivo)
