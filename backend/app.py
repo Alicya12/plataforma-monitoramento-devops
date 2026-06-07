@@ -1,11 +1,14 @@
+import random
+import time
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.simulator import generate_network_metrics
 
-app = FastAPI(title="Plataforma de Monitoramento DevOps")
+app = FastAPI(
+    title="Plataforma de Monitoramento DevOps - API",
+    description="Backend de Ingestão de Métricas"
+)
 
-# Configuração do CORS para permitir que o seu futuro Frontend acesse a API
-# Isso impede bloqueios de segurança do navegador dentro do Codespaces
+# Liberar acesso do Codespaces
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,50 +17,88 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def evaluate_alert_level(metrics):
-    """
-    Avalia o estado das métricas em tempo real e define o nível de criticidade.
-    Aplica as regras exigidas no roteiro de Redes de Computadores.
-    """
-    web = metrics["web_server"]
-    db = metrics["database"]
-    sec = metrics["security_alerts"]
-    
-    # Nível 3 - Vermelho (Crítico): serviço degradado ou indisponível
-    if web["status"] == "DOWN" or db["status"] == "DOWN" or sec["ddos_detected"]:
-        return {
-            "level": "CRITICAL",
-            "color": "red",
-            "message": "ALERTA MÁXIMO: Serviço indisponível ou anomalia crítica (DDoS) detectada!",
-            "action": "Notificação imediata enviada por e-mail para o administrador."
-        }
-    
-    # Nível 2 - Amarelo (Atenção): indica degradação que exige observação
-    elif web["latency_ms"] > 70 or db["cpu_usage_percent"] > 75 or sec["brute_force_attempts"] > 5 or sec["config_file_changed"]:
-        return {
-            "level": "WARNING",
-            "color": "yellow",
-            "message": "ATENÇÃO: Parâmetros operacionais degradados ou alteração suspeita detectada.",
-            "action": "Notificação de alerta encaminhada por e-mail."
-        }
-    
-    # Nível 1 - Verde (OK): estado normal
-    return {
-        "level": "OK",
-        "color": "green",
-        "message": "Todos os serviços operando dentro da normalidade.",
-        "action": "Nenhuma ação necessária."
-    }
+@app.get("/")
+def read_root():
+    return {"status": "online", "message": "API Rodando!"}
 
 @app.get("/api/metrics")
 def get_metrics():
-    """
-    Rota principal da API que consolida as métricas simuladas e o status de alerta.
-    """
-    current_metrics = generate_network_metrics()
-    alert_status = evaluate_alert_level(current_metrics)
+    # 1. Simulação do Estado Global do Sistema
+    roll = random.random()
+    if roll > 0.92:
+        system_level = "Vermelho"
+        system_message = "Alerta Crítico: Altas falhas consecutivas de segurança."
+        system_action = "Bloqueio de IP ativado no Firewall"
+        system_color = "red"
+    elif roll > 0.80:
+        system_level = "Amarelo"
+        system_message = "Atenção: Sobrecarga leve detectada no banco de dados."
+        system_action = "Escalonamento automático acionado"
+        system_color = "yellow"
+    else:
+        system_level = "Verde"
+        system_message = "Todos os sistemas operando normalmente."
+        system_action = "Nenhuma (Monitoramento automatizado)"
+        system_color = "green"
+
+    # 2. Métricas do Servidor Web
+    web_server_metrics = {
+        "status": "UP",
+        "latency_ms": random.randint(12, 68),
+        "rps": random.randint(120, 480),
+        "errors_4xx": random.randint(0, 4),
+        "errors_5xx": random.randint(0, 1),
+        "active_connections": random.randint(45, 180)
+    }
     
+    # 3. Métricas do Banco de Dados
+    database_metrics = {
+        "status": "UP",
+        "qps": random.randint(180, 550),
+        "cpu_usage_percent": random.randint(15, 60),
+        "memory_usage_percent": random.randint(35, 72),
+        "slow_queries": random.randint(0, 2),
+        "db_size_gb": 124.50 + round(random.uniform(0.01, 0.05), 2),
+        "growth_gb_day": round(random.uniform(0.5, 1.2), 2)
+    }
+
+    # 4. Métricas de DNS
+    dns_metrics = {
+        "status": "UP",
+        "resolution_time_ms": random.randint(2, 15),
+        "failed_resolutions": random.randint(0, 1),
+        "queries_per_second": random.randint(950, 1200)
+    }
+
+    # 5. Métricas de SMTP (E-mail)
+    smtp_metrics = {
+        "status": "UP",
+        "delivery_rate_percent": round(random.uniform(98.5, 100.0), 1),
+        "errors_count": random.randint(0, 3),
+        "queue_length": random.randint(0, 12),
+        "emails_per_minute": random.randint(20, 60)
+    }
+
+    # 6. Alertas de Segurança
+    security_alerts_metrics = {
+        "ddos_detected": True if system_level == "Vermelho" else False,
+        "brute_force_attempts": random.randint(0, 8),
+        "config_file_changed": random.choice([False, False, False, True, False])
+    }
+    
+    # Retorno estruturado exatamente como o script.js espera
     return {
-        "system_status": alert_status,
-        "services": current_metrics
+        "system_status": {
+            "level": system_level,
+            "message": system_message,
+            "action": system_action,
+            "color": system_color
+        },
+        "services": {
+            "web_server": web_server_metrics,
+            "database": database_metrics,
+            "dns": dns_metrics,
+            "smtp": smtp_metrics,
+            "security_alerts": security_alerts_metrics
+        }
     }
