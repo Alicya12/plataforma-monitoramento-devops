@@ -56,46 +56,46 @@ O diagrama abaixo ilustra o ecossistema detalhado da aplicação, destacando o f
 ```mermaid
 graph TD
     %% Definição das Camadas Locais e de Rede
-    subgraph INFRA ["🖥️ CAMADA 01: INFRAESTRUTURA MONITORADA (HOSTS SINTÉTICOS)"]
-        H1["🌐 <b>Host 01: WebServer-Prod-01</b><br>• Apache HTTP Server (Porta 80)<br>• Métricas: RPS, Latência (ms)<br>• Vulnerabilidade: CVE-2023-25690"]
-        H2["🐘 <b>Host 02: DBServer-Prod-02</b><br>• PostgreSQL DB (Porta 5432)<br>• Métricas: CPU%, Conexões Ativas<br>• Vulnerabilidade: CVE-2024-10979"]
-        H3["🔎 <b>Host 03: DNSServer-Core-01</b><br>• BIND9 DNS Server (Porta 53)<br>• Métricas: Queries/s, Taxa NXDOMAIN<br>• Vulnerabilidade: CVE-2023-2828"]
+    subgraph INFRA ["🖥️ INFRAESTRUTURA MONITORADA (HOSTS SINTÉTICOS)"]
+        H1["🌐 Host 01: WebServer-Prod-01<br>Apache HTTP (Porta 80)"]
+        H2["🐘 Host 02: DBServer-Prod-02<br>PostgreSQL DB (Porta 5432)"]
+        H3["🔎 Host 03: DNSServer-Core-01<br>BIND9 DNS Server (Porta 53)"]
     end
 
     subgraph COLESCOPE ["🚀 AMBIENTE SANDBOX: GITHUB CODESPACES"]
-        subgraph AGENT_LAYER ["📡 CAMADA DE COLETA LOCAL"]
-            AGENT["⚙️ <b>traffic_simulator.py</b><br>• Agente de Telemetria Multithread<br>• Simulação de Anomalias (DDoS / Brute-Force)<br>• Serialização de Payload em JSON"]
+        subgraph AGENT_LAYER ["📡 COLETA LOCAL"]
+            AGENT["⚙️ traffic_simulator.py<br>Agente de Telemetria JSON"]
         end
 
-        subgraph BACKEND_LAYER ["⚙️ CAMADA DE INGESTÃO E LÓGICA (BACKEND)"]
-            API["🔥 <b>BACKEND API (FastAPI / Uvicorn)</b><br>• Servidor ASGI executando na <b>Porta 8000</b><br>• Endpoints: /ingest, /metrics, /alerts, /health"]
+        subgraph BACKEND_LAYER ["⚙️ INGESTÃO E LÓGICA"]
+            API["🔥 BACKEND API<br>FastAPI / Uvicorn (Porta 8000)"]
         end
 
-        subgraph PERSISTENCE_LAYER ["🗄️ CAMADA DE PERSISTÊNCIA (DATA)"]
-            DB[("💾 <b>BANCO DE DADOS (SQLite)</b><br>• metrics.db (Acesso Assíncrono via aiosqlite)<br>• Tabelas estruturadas: metrics, alerts, sec_events")]
+        subgraph PERSISTENCE_LAYER ["🗄️ PERSISTÊNCIA"]
+            DB[("💾 BANCO DE DADOS<br>SQLite (metrics.db)")]
         end
 
-        subgraph AUTOMATION_LAYER ["🚨 AÇÃO AUTOMATIZADA & EVENTOS"]
-            NOTIFY["📧 <b>SISTEMA DE ALERTA & NOTIFICAÇÃO</b><br>• FastAPI BackgroundTasks (Assíncrono)<br>• Log de Incidentes e Disparo de Alertas<br>• Filtro Crítico: CVSS severidade alta ≥ 7.0"]
+        subgraph AUTOMATION_LAYER ["🚨 AÇÃO AUTOMATIZADA"]
+            NOTIFY["📧 ALERTA & NOTIFICAÇÃO<br>FastAPI BackgroundTasks"]
         end
     end
 
-    subgraph VISUALIZATION ["🖥️ CAMADA DE VISUALIZAÇÃO (USUÁRIO)"]
-        DASH["🌐 <b>FRONTEND DASHBOARD</b><br>• Interface Web (Porta 3000)<br>• Consumo Assíncrono (Fetch API / Polling a cada 2000ms)<br>• Status Dinâmico: Verde, Amarelo e Vermelho"]
+    subgraph VISUALIZATION ["🖥️ VISUALIZAÇÃO"]
+        DASH["🌐 FRONTEND DASHBOARD<br>Interface Web (Porta 3000)"]
     end
 
     %% Fluxos de Comunicação e Mapeamento de Protocolos de Rede
-    H1 -->|Camada de Transporte: TCP| AGENT
-    H2 -->|Camada de Transporte: TCP| AGENT
-    H3 -->|Camada de Transporte: UDP/TCP| AGENT
+    H1 -->|TCP| AGENT
+    H2 -->|TCP| AGENT
+    H3 -->|UDP / TCP| AGENT
 
-    AGENT -->|Camada de Aplicação: HTTP POST / JSON| API
+    AGENT -->|HTTP POST / JSON| API
     
-    API -->|Escrita em Disco Local| DB
-    API -->|Disparo de Evento Interno| NOTIFY
-    NOTIFY -->|Protocolo de Rede: SMTP / TLS| Ext["📩 Servidor de E-mail Externo"]
+    API -->|aiosqlite| DB
+    API -->|Task Interna| NOTIFY
+    NOTIFY -->|SMTP / TLS| Ext["📩 Servidor de E-mail Externo"]
 
-    DASH -->|Camada de Aplicação: HTTP GET / Requests| API
+    DASH -->|HTTP GET / Polling| API
 
     %% Estilização Avançada (Paleta Enterprise de Alto Contraste)
     style INFRA fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#f8fafc
@@ -137,7 +137,7 @@ graph TD
 
 ### 1.5 Padrões REST Adotados
 
-| Princípio REST | Implementação |
+| Princípio REST | Implementation |
 | :--- | :--- |
 | **Stateless** | Cada request ao Backend carrega toda informação necessária; sem sessão mantida no servidor |
 | **Interface Uniforme** | Verbos HTTP semânticos: GET (leitura), POST (ingestão), DELETE (limpeza de histórico) |
@@ -170,7 +170,7 @@ lsof -i :8000         # Deve retornar vazio (porta livre)
 
 **Passo 1 — Clonar o Repositório**
 ```bash
-git clone [https://github.com/seu-usuario/devops-monitoring-platform.git](https://github.com/seu-usuario/devops-monitoring-platform.git)
+git clone https://github.com/seu-usuario/devops-monitoring-platform.git
 cd devops-monitoring-platform
 ```
 
@@ -255,7 +255,7 @@ O monitoramento utiliza um padrão visual baseado em semáforos para guiar as a�
 | **Degradado** | 🟡 Amarelo | Um ou mais indicadores atingiram a margem de alerta. Risco de queda de performance. | Investigar causa raiz via logs. Escalonar se persistir. |
 | **Crítico** | 🔴 Vermelho | Limiares críticos violados. Alto risco ou confirmação de indisponibilidade em produção. | Acionar imediatamente o Playbook de Incidente correspondente. |
 
-### 3.2 Métmeras Monitoradas e Limiares de Alerta
+### 3.2 Métricas Monitoradas e Limiares de Alerta
 
 #### 3.2.1 Latência de Resposta (ms)
 * 🟢 **Normal:** `< 200 ms` — Tempo de resposta saudável para requisições síncronas.
@@ -269,7 +269,7 @@ O monitoramento utiliza um padrão visual baseado em semáforos para guiar as a�
 
 #### 3.2.3 Códigos de Erro HTTP
 * **4xx (Erros de Cliente):** Analisar malformação de dados vindos do simulador ou erros de rota.
-* **5xx (Erros de Servidor):** Falha interna de código ou exceção não tratada na API.
+* **5xx (Erros de Server):** Falha interna de código ou exceção não tratada na API.
 * 🛑 **Limiar Crítico:** Taxa de erros HTTP 5xx acima de **5%** do volume total trafegado em uma janela de 1 minuto.
 
 #### 3.2.4 Severidade de Vulnerabilidades (CVEs)
@@ -350,7 +350,7 @@ O monitoramento utiliza um padrão visual baseado em semáforos para guiar as a�
 * **Gatilho:** Ingestão de alertas acusando score CVSS igual ou maior a 7.0 em algum ativo monitorado.
 * **Objetivo:** Atualizar os pacotes de software mitigando a vulnerabilidade sem corromper as configurações de rede vigentes.
 
-**Procedimento de Atualização Controlada:**
+**Procedimento de Update Controlado:**
 
 1. **Auditoria de Versão Corrente:**
    ```bash
