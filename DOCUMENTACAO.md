@@ -50,6 +50,74 @@ A plataforma é composta por quatro camadas funcionais que se comunicam via prot
 │   Gera carga sintética · Publica métricas via REST no Backend   │
 │   Simula picos, falhas HTTP 5xx, anomalias de latência e CVEs   │
 └─────────────────────────────────────────────────────────────────┘
+
+## 🏗️ Arquitetura Detalhada do Sistema
+
+O ecossistema da plataforma foi desenhado seguindo uma abordagem modular e orientada a eventos. O diagrama abaixo ilustra o fluxo completo do dado, desde o monitoramento dos ativos de rede (Hosts Sintéticos) até a ingestão, persistência e visualização das métricas.
+
+```mermaid
+graph TD
+    %% Definição das Camadas Locais e de Rede
+    subgraph INFRA ["🖥️ CAMADA 01: INFRAESTRUTURA MONITORADA (HOSTS SINTÉTICOS)"]
+        H1["🌐 <b>Host 01: WebServer-Prod-01</b><br>• Apache HTTP Server (Porta 80)<br>• Métricas: RPS, Latência (ms)<br>• Vulnerabilidade: CVE-2023-25690"]
+        H2["🐘 <b>Host 02: DBServer-Prod-02</b><br>• PostgreSQL DB (Porta 5432)<br>• Métricas: CPU%, Conexões Ativas<br>• Vulnerabilidade: CVE-2024-10979"]
+        H3["🔎 <b>Host 03: DNSServer-Core-01</b><br>• BIND9 DNS Server (Porta 53)<br>• Métricas: Queries/s, Taxa NXDOMAIN<br>• Vulnerabilidade: CVE-2023-2828"]
+    end
+
+    subgraph COLESCOPE ["🚀 AMBIENTE SANDBOX: GITHUB CODESPACES"]
+        subgraph AGENT_LAYER ["📡 CAMADA DE COLETA LOCAL"]
+            AGENT["⚙️ <b>traffic_simulator.py</b><br>• Agente de Telemetria Multithread<br>• Simulação de Anomalias (DDoS / Brute-Force)<br>• Serialização de Payload em JSON"]
+        end
+
+        subgraph BACKEND_LAYER ["⚙️ CAMADA DE INGESTÃO E LÓGICA (BACKEND)"]
+            API["🔥 <b>BACKEND API (FastAPI / Uvicorn)</b><br>• Servidor ASGI executando na <b>Porta 8000</b><br>• Endpoints: /ingest, /metrics, /alerts, /health"]
+        end
+
+        subgraph PERSISTENCE_LAYER ["🗄️ CAMADA DE PERSISTÊNCIA (DATA)"]
+            DB[("💾 <b>BANCO DE DADOS (SQLite)</b><br>• metrics.db (Acesso Assíncrono via aiosqlite)<br>• Tabelas estruturadas: metrics, alerts, sec_events")]
+        end
+
+        subgraph AUTOMATION_LAYER ["🚨 AÇÃO AUTOMATIZADA & EVENTOS"]
+            NOTIFY["📧 <b>SISTEMA DE ALERTA & NOTIFICAÇÃO</b><br>• FastAPI BackgroundTasks (Assíncrono)<br>• Log de Incidentes e Disparo de Alertas<br>• Filtro Crítico: CVSS severidade alta ≥ 7.0"]
+        end
+    end
+
+    subgraph VISUALIZATION ["🖥️ CAMADA DE VISUALIZAÇÃO (USUÁRIO)"]
+        DASH["🌐 <b>FRONTEND DASHBOARD</b><br>• Interface Web (Porta 3000)<br>• Consumo Assíncrono (Fetch API / Polling a cada 2000ms)<br>• Status Dinâmico: Verde, Amarelo e Vermelho"]
+    end
+
+    %% Fluxos de Comunicação e Mapeamento de Protocolos de Rede
+    H1 -->|Camada de Transporte: TCP| AGENT
+    H2 -->|Camada de Transporte: TCP| AGENT
+    H3 -->|Camada de Transporte: UDP/TCP| AGENT
+
+    AGENT -->|Camada de Aplicação: HTTP POST / JSON| API
+    
+    API -->|Escrita em Disco Local| DB
+    API -->|Disparo de Evento Interno| NOTIFY
+    NOTIFY -->|Protocolo de Rede: SMTP / TLS| Ext["📩 Servidor de E-mail Externo"]
+
+    DASH -->|Camada de Aplicação: HTTP GET / Requests| API
+
+    %% Estilização Avançada (Paleta Enterprise de Alto Contraste)
+    style INFRA fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#f8fafc
+    style COLESCOPE fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#f8fafc
+    style VISUALIZATION fill:#1c1917,stroke:#fb923c,stroke-width:2px,color:#f8fafc
+    
+    style AGENT_LAYER fill:#312e81,stroke:#a5b4fc,stroke-width:1px,color:#f8fafc
+    style BACKEND_LAYER fill:#4c1d95,stroke:#c084fc,stroke-width:1px,color:#f8fafc
+    style PERSISTENCE_LAYER fill:#1e293b,stroke:#94a3b8,stroke-width:1px,color:#f8fafc
+    style AUTOMATION_LAYER fill:#7f1d1d,stroke:#f87171,stroke-width:1px,color:#f8fafc
+
+    style H1 fill:#1e293b,stroke:#38bdf8,stroke-width:1px,color:#f1f5f9
+    style H2 fill:#1e293b,stroke:#38bdf8,stroke-width:1px,color:#f1f5f9
+    style H3 fill:#1e293b,stroke:#38bdf8,stroke-width:1px,color:#f1f5f9
+    style AGENT fill:#111827,stroke:#10b981,stroke-width:1px,color:#f1f5f9
+    style API fill:#111827,stroke:#a855f7,stroke-width:1px,color:#f1f5f9
+    style DB fill:#111827,stroke:#64748b,stroke-width:1px,color:#f1f5f9
+    style NOTIFY fill:#111827,stroke:#ef4444,stroke-width:1px,color:#f1f5f9
+    style DASH fill:#111827,stroke:#f97316,stroke-width:1px,color:#f1f5f9
+    style Ext fill:#334155,stroke:#cbd5e1,stroke-width:1px,color:#f1f5f9
 ```
 
 ### 1.2 Componentes e Responsabilidades
