@@ -38,30 +38,33 @@ graph TD
     API --> DB
     API --> NOTIF
     FRONT --> API
+```
 
-🛠️ Tecnologias Utilizadas
-Front-end: HTML5, Tailwind CSS (Design Responsivo) e JavaScript Assíncrono (Fetch API / Polling cíclico a cada 2000ms).
+---
 
-Back-end: Python, FastAPI (Framework assíncrono de alta performance) e Uvicorn (Asynchronous Server Gateway Interface).
+## 🛠️ Tecnologias Utilizadas
 
-Banco de Dados: SQLite (Armazenamento local binarizado para histórico de telemetria em metrics.db).
+* **Front-end:** HTML5, Tailwind CSS (Design Responsivo) e JavaScript Assíncrono (Fetch API / Polling cíclico a cada 2000ms).
+* **Back-end:** Python, FastAPI (Framework assíncrono de alta performance) e Uvicorn (Asynchronous Server Gateway Interface).
+* **Banco de Dados:** SQLite (Armazenamento local binarizado para histórico de telemetria em `metrics.db`).
+* **Ambiente de Desenvolvimento:** GitHub Codespaces (Cloud Base).
 
-Ambiente de Desenvolvimento: GitHub Codespaces (Cloud Base).
+---
 
-📊 Funcionalidades Implementadas
-Visão Consolidada do Ecossistema: Painel dinâmico que reflete o estado global do sistema (Verde, Amarelo, Vermelho).
+## 📊 Funcionalidades Implementadas
 
-Monitoramento de Métricas por Serviço:
+* **Visão Consolidada do Ecossistema:** Painel dinâmico que reflete o estado global do sistema (Verde, Amarelo, Vermelho).
+* **Monitoramento de Métricas por Serviço:**
+  * **Web Server:** Latência (ms), Requisições por Segundo (RPS), Códigos de Erro (4xx/5xx) e Conexões Ativas.
+  * **Banco de Dados:** Consultas por Segundo (QPS), Uso de CPU/Memória, Crescimento de Armazenamento (GB/dia) e Queries Lentas.
+  * **DNS & SMTP:** Resolução de nomes, taxa de entrega e tamanho da fila de e-mails em tempo real.
+* **Mecanismo de Segurança e Alertas:** Detecção de picos anômalos de tráfego (DDoS), tentativas de força bruta (Brute-Force), alterações em arquivos de configuração e mapeamento de vulnerabilidades conhecidas (CVE).
 
-Web Server: Latência (ms), Requisições por Segundo (RPS), Códigos de Erro (4xx/5xx) e Conexões Ativas.
+---
 
-Banco de Dados: Consultas por Segundo (QPS), Uso de CPU/Memória, Crescimento de Armazenamento (GB/dia) e Queries Lentas.
+## 📂 Estrutura do Repositório
 
-DNS & SMTP: Resolução de nomes, taxa de entrega e tamanho da fila de e-mails em tempo real.
-
-Mecanismo de Segurança e Alertas: Detecção de picos anômalos de tráfego (DDoS), tentativas de força bruta (Brute-Force), alterações em arquivos de configuração e mapeamento de vulnerabilidades conhecidas (CVE).
-
-📂 Estrutura do Repositório
+```text
 ├── backend/
 │   ├── app.py              # API de Ingestão de Métricas (FastAPI)
 │   ├── requirements.txt    # Dependências de pacotes do ecossistema Python
@@ -74,3 +77,4 @@ Mecanismo de Segurança e Alertas: Detecção de picos anômalos de tráfego (DD
 ├── DOCUMENTACAO.md         # Relatório Técnico Completo (Arquitetura, Runbooks e Playbooks)
 ├── metrics.db              # Banco de dados SQLite persistido (Auto-generated)
 └── README.md               # Apresentação do projeto (Este arquivo)
+```
