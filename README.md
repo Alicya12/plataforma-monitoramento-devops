@@ -12,51 +12,32 @@ A aplicação foi projetada para capturar, persistir e alertar sobre o estado de
 O ecossistema foi estruturado seguindo o modelo de microsserviços e orientado a eventos, mapeando os hosts monitorados, a camada de coleta, a ingestão dos dados e a visualização no painel:
 
 ```mermaid
-graph TB
-    subgraph INFRA ["Infraestrutura Monitorada (Hosts Sintéticos)"]
-        H1["🖥️ Host 01: WebServer-Prod-01 (Apache)"]
-        H2["🖥️ Host 02: DBServer-Prod-02 (PostgreSQL)"]
-        H3["🖥️ Host 03: DNSServer-Core-01 (BIND9)"]
+graph TD
+    subgraph INFRA [Infraestrutura Monitorada]
+        H1[Host 01: WebServer Apache]
+        H2[Host 02: DBServer PostgreSQL]
+        H3[Host 03: DNSServer BIND9]
     end
 
-    subgraph CODESPACE ["Ambiente GitHub Codespaces Sandbox"]
-        subgraph AGENT_LAYER ["Camada de Coleta"]
-            AG["⚙️ traffic_simulator.py (Agente)"]
-        end
-
-        subgraph BACKEND ["Camada de Ingestão e Lógica"]
-            API["🚀 BACKEND API (FastAPI) - Porta 8000"]
-        end
-
-        subgraph DATA ["Camada de Persistência"]
-            DB["🗄️ BANCO DE DADOS (SQLite)"]
-        end
-
-        subgraph ALERTS ["Ação Automatizada"]
-            NOTIF["📧 SISTEMA DE NOTIFICAÇÃO (Logs/SMTP)"]
-        end
+    subgraph CODESPACE [Ambiente GitHub Codespaces Sandbox]
+        AG[traffic_simulator.py Agente]
+        API[BACKEND API FastAPI - Porta 8000]
+        DB[(BANCO DE DADOS SQLite)]
+        NOTIF[SISTEMA DE NOTIFICACAO Logs/SMTP]
     end
 
-    subgraph CLIENT ["Camada de Visualização - Usuário"]
-        FRONT["🌐 FRONTEND DASHBOARD - Porta 3000"]
+    subgraph CLIENT [Camada de Visualizacao]
+        FRONT[FRONTEND DASHBOARD - Porta 3000]
     end
 
     H1 --> AG
     H2 --> AG
     H3 --> AG
 
-    AG -->|HTTP POST / JSON| API
-    API -->|Gravação Assíncrona| DB
-    API -->|Alerta Event-Driven| NOTIF
-    FRONT -->|HTTP GET / Polling| API
-
-    style INFRA fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px
-    style CODESPACE fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
-    style CLIENT fill:#fff3e0,stroke:#f57c00,stroke-width:2px
-    style API fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
-    style DB fill:#eceff1,stroke:#455a64,stroke-width:2px
-    style NOTIF fill:#ffebee,stroke:#d32f2f,stroke-width:2px
-
+    AG --> API
+    API --> DB
+    API --> NOTIF
+    FRONT --> API
 🛠️ Tecnologias Utilizadas
 Front-end: HTML5, Tailwind CSS (Design Responsivo) e JavaScript Assíncrono (Fetch API / Polling cíclico a cada 2000ms).
 
@@ -93,3 +74,5 @@ Plaintext
 ├── DOCUMENTACAO.md         # Relatório Técnico Completo (Arquitetura, Runbooks e Playbooks)
 ├── metrics.db              # Banco de dados SQLite persistido (Auto-generated)
 └── README.md               # Apresentação do projeto (Este arquivo)
+
+---
