@@ -5,6 +5,8 @@ Este projeto consiste em uma **Plataforma de Monitoramento de Serviços de Rede*
 
 A aplicação foi projetada para capturar, persistir e alertar sobre o estado de integridade de múltiplos serviços essenciais de infraestrutura (Web Server, Banco de Dados, DNS e SMTP), simulando cenários reais de operação e segurança.
 
+---
+
 ## 🏗️ Arquitetura do Sistema
 
 O ecossistema foi estruturado seguindo o modelo de microsserviços e orientado a eventos, mapeando os hosts monitorados, a camada de coleta, a ingestão dos dados e a visualização no painel:
@@ -39,17 +41,15 @@ graph TB
         FRONT["🌐 FRONTEND DASHBOARD<br>(Navegador Web / JS)<br>Porta 3000"]
     end
 
-    %% Fluxos de Comunicação e Protocolos de Rede
-    H1 -->|Coleta Local| AG
-    H2 -->|Coleta Local| AG
-    H3 -->|Coleta Local| AG
+    H1 --> AG
+    H2 --> AG
+    H3 --> AG
 
     AG -->|HTTP POST / JSON| API
     API -->|Gravação Assíncrona| DB
-    API -->|Disparo de Alerta Event-Driven| NOTIF
-    FRONT -->|HTTP GET / Polling Periódico| API
+    API -->|Alerta Event-Driven| NOTIF
+    FRONT -->|HTTP GET / Polling| API
 
-    %% Estilização de Design Profissional
     style INFRA fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px,stroke-dasharray: 5 5
     style CODESPACE fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
     style CLIENT fill:#fff3e0,stroke:#f57c00,stroke-width:2px
