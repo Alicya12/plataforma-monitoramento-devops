@@ -268,8 +268,8 @@ O monitoramento utiliza um padrão visual baseado em semáforos para guiar as a�
 * 🔴 **Crítico:** `+200%` (Indicativo de ataque de negação de serviço) ou queda abrupta para `0` (indisponibilidade).
 
 #### 3.2.3 Códigos de Erro HTTP
-* **4xx (Erros de Cliente):** Analisar malformação de dados vindos do simulador ou erros de rota.
-* **5xx (Erros de Server):** Falha interna de código ou exceção não tratada na API.
+* 🟢 **4xx (Erros de Cliente):** Analisar malformação de dados vindos do simulador ou erros de rota.
+* 🟡 **5xx (Erros de Server):** Falha interna de código ou exceção não tratada na API.
 * 🛑 **Limiar Crítico:** Taxa de erros HTTP 5xx acima de **5%** do volume total trafegado em uma janela de 1 minuto.
 
 #### 3.2.4 Severidade de Vulnerabilidades (CVEs)
