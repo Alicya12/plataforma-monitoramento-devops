@@ -13,21 +13,21 @@ O ecossistema foi estruturado seguindo o modelo de microsserviços e orientado a
 
 ```mermaid
 graph TD
-    subgraph INFRA [Infraestrutura Monitorada]
-        H1[Host 01: WebServer Apache]
-        H2[Host 02: DBServer PostgreSQL]
-        H3[Host 03: DNSServer BIND9]
+    subgraph INFRA ["Infraestrutura Monitorada"]
+        H1["Host 01 - WebServer Apache"]
+        H2["Host 02 - DBServer PostgreSQL"]
+        H3["Host 03 - DNSServer BIND9"]
     end
 
-    subgraph CODESPACE [Ambiente GitHub Codespaces Sandbox]
-        AG[traffic_simulator.py Agente]
-        API[BACKEND API FastAPI - Porta 8000]
-        DB[(BANCO DE DADOS SQLite)]
-        NOTIF[SISTEMA DE NOTIFICACAO Logs/SMTP]
+    subgraph CODESPACE ["Ambiente GitHub Codespaces"]
+        AG["traffic_simulator.py (Agente)"]
+        API["BACKEND API (FastAPI) - Porta 8000"]
+        DB["BANCO DE DADOS (SQLite)"]
+        NOTIF["SISTEMA DE NOTIFICACAO (Logs/SMTP)"]
     end
 
-    subgraph CLIENT [Camada de Visualizacao]
-        FRONT[FRONTEND DASHBOARD - Porta 3000]
+    subgraph CLIENT ["Camada de Visualizacao"]
+        FRONT["FRONTEND DASHBOARD - Porta 3000"]
     end
 
     H1 --> AG
@@ -38,6 +38,7 @@ graph TD
     API --> DB
     API --> NOTIF
     FRONT --> API
+
 🛠️ Tecnologias Utilizadas
 Front-end: HTML5, Tailwind CSS (Design Responsivo) e JavaScript Assíncrono (Fetch API / Polling cíclico a cada 2000ms).
 
@@ -61,7 +62,6 @@ DNS & SMTP: Resolução de nomes, taxa de entrega e tamanho da fila de e-mails e
 Mecanismo de Segurança e Alertas: Detecção de picos anômalos de tráfego (DDoS), tentativas de força bruta (Brute-Force), alterações em arquivos de configuração e mapeamento de vulnerabilidades conhecidas (CVE).
 
 📂 Estrutura do Repositório
-Plaintext
 ├── backend/
 │   ├── app.py              # API de Ingestão de Métricas (FastAPI)
 │   ├── requirements.txt    # Dependências de pacotes do ecossistema Python
@@ -74,5 +74,3 @@ Plaintext
 ├── DOCUMENTACAO.md         # Relatório Técnico Completo (Arquitetura, Runbooks e Playbooks)
 ├── metrics.db              # Banco de dados SQLite persistido (Auto-generated)
 └── README.md               # Apresentação do projeto (Este arquivo)
-
----
