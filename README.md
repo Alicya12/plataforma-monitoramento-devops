@@ -13,32 +13,32 @@ O ecossistema foi estruturado seguindo o modelo de microsserviços e orientado a
 
 ```mermaid
 graph TB
-    subgraph INFRA [Infraestrutura Monitorada - Hosts Sintéticos]
-        H1["🖥️ Host 01: WebServer-Prod-01<br>(Apache HTTP Server)<br>• Métricas: RPS, Latência<br>• CVE-2023-25690"]
-        H2["🖥️ Host 02: DBServer-Prod-02<br>(PostgreSQL DB)<br>• Métricas: CPU, Conexões<br>• CVE-2024-10979"]
-        H3["🖥️ Host 03: DNSServer-Core-01<br>(BIND9 DNS Server)<br>• Métricas: Queries/s, Erros<br>• CVE-2023-2828"]
+    subgraph INFRA ["Infraestrutura Monitorada (Hosts Sintéticos)"]
+        H1["🖥️ Host 01: WebServer-Prod-01 (Apache)"]
+        H2["🖥️ Host 02: DBServer-Prod-02 (PostgreSQL)"]
+        H3["🖥️ Host 03: DNSServer-Core-01 (BIND9)"]
     end
 
-    subgraph CODESPACE [Ambiente GitHub Codespaces Sandbox]
-        subgraph AGENT_LAYER [Camada de Coleta]
-            AG["⚙️ traffic_simulator.py<br>(Agente de Telemetria)"]
+    subgraph CODESPACE ["Ambiente GitHub Codespaces Sandbox"]
+        subgraph AGENT_LAYER ["Camada de Coleta"]
+            AG["⚙️ traffic_simulator.py (Agente)"]
         end
 
-        subgraph BACKEND [Camada de Ingestão & Lógica]
-            API["🚀 BACKEND API<br>(FastAPI / Uvicorn)<br>Porta 8000"]
+        subgraph BACKEND ["Camada de Ingestão e Lógica"]
+            API["🚀 BACKEND API (FastAPI) - Porta 8000"]
         end
 
-        subgraph DATA [Camada de Persistência]
-            DB["🗄️ BANCO DE DADOS<br>(SQLite Async)<br>metrics.db"]
+        subgraph DATA ["Camada de Persistência"]
+            DB["🗄️ BANCO DE DADOS (SQLite)"]
         end
 
-        subgraph ALERTS [Ação Automatizada]
-            NOTIF["📧 SISTEMA DE NOTIFICAÇÃO<br>(BackgroundTasks - SMTP/Log)"]
+        subgraph ALERTS ["Ação Automatizada"]
+            NOTIF["📧 SISTEMA DE NOTIFICAÇÃO (Logs/SMTP)"]
         end
     end
 
-    subgraph CLIENT [Camada de Visualização - Usuário]
-        FRONT["🌐 FRONTEND DASHBOARD<br>(Navegador Web / JS)<br>Porta 3000"]
+    subgraph CLIENT ["Camada de Visualização - Usuário"]
+        FRONT["🌐 FRONTEND DASHBOARD - Porta 3000"]
     end
 
     H1 --> AG
@@ -50,37 +50,37 @@ graph TB
     API -->|Alerta Event-Driven| NOTIF
     FRONT -->|HTTP GET / Polling| API
 
-    style INFRA fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px,stroke-dasharray: 5 5
+    style INFRA fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px
     style CODESPACE fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
     style CLIENT fill:#fff3e0,stroke:#f57c00,stroke-width:2px
     style API fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
     style DB fill:#eceff1,stroke:#455a64,stroke-width:2px
     style NOTIF fill:#ffebee,stroke:#d32f2f,stroke-width:2px
----
 
-## 🛠️ Tecnologias Utilizadas
+🛠️ Tecnologias Utilizadas
+Front-end: HTML5, Tailwind CSS (Design Responsivo) e JavaScript Assíncrono (Fetch API / Polling cíclico a cada 2000ms).
 
-* **Front-end:** HTML5, Tailwind CSS (Design Responsivo) e JavaScript Assíncrono (Fetch API / Polling cíclico a cada 2000ms).
-* **Back-end:** Python, FastAPI (Framework assíncrono de alta performance) e Uvicorn (Asynchronous Server Gateway Interface).
-* **Banco de Dados:** SQLite (Armazenamento local binarizado para histórico de telemetria em `metrics.db`).
-* **Ambiente de Desenvolvimento:** GitHub Codespaces (Cloud Base).
+Back-end: Python, FastAPI (Framework assíncrono de alta performance) e Uvicorn (Asynchronous Server Gateway Interface).
 
----
+Banco de Dados: SQLite (Armazenamento local binarizado para histórico de telemetria em metrics.db).
 
-## 📊 Funcionalidades Implementadas
+Ambiente de Desenvolvimento: GitHub Codespaces (Cloud Base).
 
-* **Visão Consolidada do Ecossistema:** Painel dinâmico que reflete o estado global do sistema (Verde, Amarelo, Vermelho).
-* **Monitoramento de Métricas por Serviço:**
-  * **Web Server:** Latência (ms), Requisições por Segundo (RPS), Códigos de Erro (4xx/5xx) e Conexões Ativas.
-  * **Banco de Dados:** Consultas por Segundo (QPS), Uso de CPU/Memória, Crescimento de Armazenamento (GB/dia) e Queries Lentas.
-  * **DNS & SMTP:** Resolução de nomes, taxa de entrega e tamanho da fila de e-mails em tempo real.
-* **Mecanismo de Segurança e Alertas:** Detecção de picos anômalos de tráfego (DDoS), tentativas de força bruta (Brute-Force), alterações em arquivos de configuração e mapeamento de vulnerabilidades conhecidas (CVE).
+📊 Funcionalidades Implementadas
+Visão Consolidada do Ecossistema: Painel dinâmico que reflete o estado global do sistema (Verde, Amarelo, Vermelho).
 
----
+Monitoramento de Métricas por Serviço:
 
-## 📂 Estrutura do Repositório
+Web Server: Latência (ms), Requisições por Segundo (RPS), Códigos de Erro (4xx/5xx) e Conexões Ativas.
 
-```text
+Banco de Dados: Consultas por Segundo (QPS), Uso de CPU/Memória, Crescimento de Armazenamento (GB/dia) e Queries Lentas.
+
+DNS & SMTP: Resolução de nomes, taxa de entrega e tamanho da fila de e-mails em tempo real.
+
+Mecanismo de Segurança e Alertas: Detecção de picos anômalos de tráfego (DDoS), tentativas de força bruta (Brute-Force), alterações em arquivos de configuração e mapeamento de vulnerabilidades conhecidas (CVE).
+
+📂 Estrutura do Repositório
+Plaintext
 ├── backend/
 │   ├── app.py              # API de Ingestão de Métricas (FastAPI)
 │   ├── requirements.txt    # Dependências de pacotes do ecossistema Python
